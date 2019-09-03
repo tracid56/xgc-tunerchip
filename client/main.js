@@ -1,5 +1,4 @@
 // Variables
-let ESX = null;
 let isGuiOpen = false;
 let defaultVehicleValues = [];
 let currentVehicleTable = [];
