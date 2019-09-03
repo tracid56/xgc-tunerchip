@@ -2,6 +2,10 @@
 let isGuiOpen = false;
 let defaultVehicleValues = [];
 let currentVehicleTable = [];
+let ESX = null;
+
+emit("esx:getSharedObject", (obj) => ESX = obj);
+
 
 if (!config.disableCommand) {
   RegisterCommand("tuner", () => {
@@ -153,6 +157,7 @@ function closeTuneGui() {
   isGuiOpen = false;
   SetNuiFocus(false, false);
   SendNuiMessage(JSON.stringify({ type: "tunerchip-ui", display: false }));
+  ESX.UI.Menu.CloseAll()
 }
 
 
