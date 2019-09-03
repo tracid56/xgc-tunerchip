@@ -1,14 +1,18 @@
 // Variables
+let ESX = null;
 let isGuiOpen = false;
 let defaultVehicleValues = [];
 let currentVehicleTable = [];
 
-RegisterCommand("tuner", () => {
-  emit("xgc-tuner:openTuner")
-});
+if (!config.disableCommand) {
+  RegisterCommand("tuner", () => {
+    emit("xgc-tuner:openTuner")
+  });
+}
 
 RegisterNetEvent("xgc-tuner:openTuner")
 AddEventHandler("xgc-tuner:openTuner", () => {
+  if (isGuiOpen) return;
   let ped = GetPlayerPed(-1);
   let vehicle = GetVehiclePedIsUsing(ped);
 
@@ -42,7 +46,6 @@ AddEventHandler("xgc-tuner:openTuner", () => {
         fDriveInertia: GetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveInertia"),
       });
 
-      console.log(defaultVehicleValues)
     }
     
     let tuneSettings = currentVehicleTable.find(e => e.plate === vehiclePlate);
@@ -98,10 +101,8 @@ function applyDriveTrain(drivetrain, plate) {
   if (drivetrain !== 5) {
     let newDriveTrain = (drivetrain / 10)
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveBiasFront", newDriveTrain)
-    console.log("Drive Train Set: " + newDriveTrain)
   } else {
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveBiasFront", defaultVehicleValues[index].fDriveBiasFront)
-    console.log("Drive set to default.")
   }
 }
 
@@ -123,7 +124,6 @@ function applyBoost(boost, acceleration, plate) {
   if (boost === 0) {
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDriveForce", defaultVehicleValues[index].fInitialDriveForce)
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fLowSpeedTractionLossMult", defaultVehicleValues[index].fLowSpeedTractionLossMult)
-    console.log("Set boost and fuel to default")
   }
 
   let defBoost = defaultVehicleValues[index].fInitialDriveForce;
@@ -134,9 +134,6 @@ function applyBoost(boost, acceleration, plate) {
   SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDriveForce", newBoost);
   SetVehicleHandlingFloat(vehicle, "CHandlingData", "fLowSpeedTractionLossMult", newTraction);
 
-
-  console.log("old trac: " + defTrac)
-  console.log("New trac: " + newTraction)
 
   if (acceleration === 0 && boost === 0) {
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveInertia", defaultVehicleValues[index].fDriveInertia)

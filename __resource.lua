@@ -8,6 +8,10 @@ client_script {
   "client/main.js",
 }
 
+server_script {
+  "server/main.js",
+}
+
 files {
     "ui/index.html",
     "ui/style.css",

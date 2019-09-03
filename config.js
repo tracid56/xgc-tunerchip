@@ -1,3 +1,3 @@
 const config = {
-  openInventoryKey: 288
+  disableCommand: false,
 }
