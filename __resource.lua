@@ -4,7 +4,6 @@ ui_page "ui/index.html"
 description "XGC Tuner Chip"
 
 client_script {
-  "config.js",
   "client/main.js",
 }
 
