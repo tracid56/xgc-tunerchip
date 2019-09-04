@@ -4,7 +4,7 @@ $(function() {
   let boostSlider = $("#boostSlider");
   let accelerationSlider = $("#accelerationSlider");
   let gearSlider = $("#gearSlider");
-  let breakSlider = $("#breakSlider");
+  let brakingSlider = $("#brakingSlider");
   let drivetrainSlider = $("#drivetrainSlider")
   
   window.onload = (e) => {
@@ -17,7 +17,7 @@ $(function() {
           boostSlider.val(tune.boost);
           accelerationSlider.val(tune.acceleration);
           gearSlider.val(tune.gearchange);
-          breakSlider.val(tune.breaking);
+          brakingSlider.val(tune.breaking);
           drivetrainSlider.val(tune.drivetrain);
           $("#container").show();
         } else {
@@ -44,14 +44,14 @@ $(function() {
     boostSlider.val(0);
     accelerationSlider.val(0);
     gearSlider.val(0);
-    breakSlider.val(5);
+    brakingSlider.val(5);
     drivetrainSlider.val(5);
 
     // Updating object
     tune.boost = JSON.parse(boostSlider.val());
     tune.acceleration = JSON.parse(accelerationSlider.val());
     tune.gearchange = JSON.parse(gearSlider.val());
-    tune.breaking = JSON.parse(breakSlider.val());
+    tune.breaking = JSON.parse(brakingSlider.val());
     tune.drivetrain = JSON.parse(drivetrainSlider.val());
 
   });
@@ -62,14 +62,14 @@ $(function() {
       boostSlider.val(10);
       accelerationSlider.val(10);
       gearSlider.val(10);
-      breakSlider.val(5);
+      brakingSlider.val(5);
       drivetrainSlider.val(5);
 
       // Updating object
       tune.boost = JSON.parse(boostSlider.val());
       tune.acceleration = JSON.parse(accelerationSlider.val());
       tune.gearchange = JSON.parse(gearSlider.val());
-      tune.breaking = JSON.parse(breakSlider.val());
+      tune.breaking = JSON.parse(brakingSlider.val());
       tune.drivetrain = JSON.parse(drivetrainSlider.val());
 
     });
@@ -87,7 +87,7 @@ $(function() {
     tune.gearchange = JSON.parse($(event.target).val());
   });
 
-  breakSlider.on("input", (event) => {
+  brakingSlider.on("input", (event) => {
     tune.breaking = JSON.parse($(event.target).val());
   });
 
