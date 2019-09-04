@@ -49,7 +49,6 @@ AddEventHandler("xgc-tuner:openTuner", () => {
     
     let tuneSettings = currentVehicle.find(e => e.plate === vehiclePlate);
     openTunerHud(tuneSettings)
-
   }
 
 });
@@ -63,66 +62,66 @@ function openTunerHud(data) {
 }
 
 function applyTune(data) {
-  let { boost, acceleration, gearchange, braking, drivetrain, plate } = data; 
-  let index = currentVehicle.findIndex(e => e.plate === plate);
   let vehicle = GetVehiclePedIsUsing(GetPlayerPed(-1));
+  let index = defaultVehicleValues.findIndex(e => e.plate === data.plate);
+  let index2 = currentVehicle.findIndex(e => e.plate === data.plate);
 
-  currentVehicle[index].boost = boost;
-  currentVehicle[index].acceleration = acceleration;
-  currentVehicle[index].gearchange = gearchange;
-  currentVehicle[index].braking = braking;
-  currentVehicle[index].drivetrain = drivetrain;
+  currentVehicle[index2].boost = data.boost;
+  currentVehicle[index2].acceleration = data.acceleration;
+  currentVehicle[index2].gearchange = data.gearchange;
+  currentVehicle[index2].braking = data.braking;
+  currentVehicle[index2].drivetrain = data.drivetrain;
 
-  // Gear change section
-  if (gearchange !== 0) {
-    let defScale = defaultVehicleValues[index].fClutchChangeRateScaleUpShift
-    let newScaleUp = defScale + gearchange;
-    let newScaleDown = defScale + gearchange;
-    let newDrag = (gearchange / 50) + defaultVehicleValues[index].fInitialDragCoeff;
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleUpShift", newScaleUp)
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleDownShift", newScaleDown)
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDragCoeff", newDrag)
-  } else {
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleUpShift", defaultVehicleValues[index].fClutchChangeRateScaleUpShift)
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleDownShift", defaultVehicleValues[index].fClutchChangeRateScaleDownShift)
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDragCoeff", defaultVehicleValues[index].fInitialDragCoeff)
-  }
-
-  // Drive train section
-  if (drivetrain === 5) {
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveBiasFront", defaultVehicleValues[index].fDriveBiasFront)
-  } else {
-    let newDriveTrain = drivetrain / 10;
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveBiasFront", newDriveTrain);
-  }
-
-  // Braking section
-  if (braking === 5) {
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fBrakeBiasFront", defaultVehicleValues[index].fBrakeBiasFront)
-  } else {
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fBrakeBiasFront", braking / 10)
-  }
-
-  // Acceleration and boost section 
-  if (boost === 0) {
+  if (data.boost === 0) {
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDriveForce", defaultVehicleValues[index].fInitialDriveForce);
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fLowSpeedTractionLossMult", defaultVehicleValues[index].fLowSpeedTractionLossMult);
   } else {
-    let newBoost = (boost / 200) * defaultVehicleValues[index].fInitialDriveForce + defaultVehicleValues[index].fInitialDriveForce;
-    let newLoss = (boost / 20) * defaultVehicleValues[index].fLowSpeedTractionLossMult + defaultVehicleValues[index].fLowSpeedTractionLossMult;
+    let defaultDriveForce = defaultVehicleValues[index].fInitialDriveForce;
+    let defaultTractionLoss = defaultVehicleValues[index].fLowSpeedTractionLossMult;
+    let newBoost = (defaultDriveForce + defaultDriveForce * (data.boost / 100));
+    let newLoss = (defaultTractionLoss + defaultTractionLoss * (data.boost / 10));
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDriveForce", newBoost);
     SetVehicleHandlingFloat(vehicle, "CHandlingData", "fLowSpeedTractionLossMult", newLoss);
+    console.log("New Boost: " + newBoost);
+    console.log("New Traction Loss: " + newLoss);
   }
 
-  if (acceleration === 0 && boost === 0) {
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveInertia", defaultVehicleValues[index].fDriveInertia)
+  if (data.boost === 0 && data.acceleration === 0) {
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveInertia", defaultVehicleValues[index].fDriveInertia);
   } else {
-    let newBoost = (acceleration / 200) * defaultVehicleValues[index].fInitialDriveForce + defaultVehicleValues[index].fInitialDriveForce;
-    let newInter = (acceleration / 30) * defaultVehicleValues[index].fDriveInertia - defaultVehicleValues[index].fDriveInertia;
-    if (newInter < 0.5) newInter = 0.5;
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDriveForce", newBoost);
-    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveInertia", newInter);
-  };
+    let defInertia = defaultVehicleValues[index].fDriveInertia;
+    let newInertia = (defInertia - defInertia * (data.boost / 30));
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveInertia", newInertia)
+    console.log("New Inertia: " + newInertia);
+  }
+
+  if (data.gearchange === 0) {
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleUpShift", defaultVehicleValues[index].fClutchChangeRateScaleUpShift)
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleDownShift", defaultVehicleValues[index].fClutchChangeRateScaleDownShift)
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDragCoeff", defaultVehicleValues[index].fInitialDragCoeff)
+  } else {
+    let defScale = defaultVehicleValues[index].fClutchChangeRateScaleUpShift
+    let newScale = defScale + data.gearchange;
+    let newDrag = (defaultVehicleValues[index].fInitialDragCoeff + (data.gearchange / 45));
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleUpShift", newScale)
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fClutchChangeRateScaleDownShift", newScale)
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fInitialDragCoeff", newDrag)
+    console.log("New gear up/down: " + newScale);
+    console.log("New drag: " + newDrag)
+  }
+
+  if (data.drivetrain === 5) {
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveBiasFront", defaultVehicleValues[index].fDriveBiasFront)
+  } else {
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fDriveBiasFront", (data.drivetrain / 10));
+    console.log("New drivetrain: " + (data.drivetrain / 10));
+  }
+
+  if (data.braking === 5) {
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fBrakeBiasFront", defaultVehicleValues[index].fBrakeBiasFront)
+  } else {
+    SetVehicleHandlingFloat(vehicle, "CHandlingData", "fBrakeBiasFront", data.braking / 10)
+  }
 }
 
 // Close the tuner
